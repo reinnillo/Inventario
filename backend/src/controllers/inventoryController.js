@@ -48,15 +48,28 @@ export const getClientInventory = async (req, res) => {
       return res.status(200).json({ count: count, inventory: data });
     }
 
-    // MODALIDAD 2: EXTRACCIÓN MASIVA (Sincronización Offline / Dexie)
-    // Implementación de la estrategia recomendada por Supabase: Iterar por rangos.
-    let allRows = [];
+    // MODALIDAD 2: EXTRACCIÓN MASIVA (STREAMING)
+    // Optimizada para bajo consumo de RAM: Escribe en el socket a medida que recibe datos.
+    
+    // 1. Obtener total primero (Metadata)
+    const { count, error: countError } = await supabase
+      .from('inventarios_cliente_part')
+      .select('*', { count: 'exact', head: true })
+      .eq('id_cliente', cliente_id);
+
+    if (countError) throw countError;
+
+    // 2. Iniciar Stream JSON manual
+    res.setHeader('Content-Type', 'application/json');
+    res.write(`{"count":${count},"inventory":[`);
+
     let hasMore = true;
     let currentDataPage = 0;
-    const CHUNK_SIZE = 1000; // Máximo permitido por API Gateway de Supabase
-    const MAX_RETRIES = 3;   // Tolerancia a fallos de red
+    const CHUNK_SIZE = 1000; 
+    const MAX_RETRIES = 3;
+    let isFirstChunk = true;
 
-    console.log(`🔄 [Sync] Iniciando descarga masiva para Cliente ${cliente_id}...`);
+    console.log(`🔄 [Stream] Iniciando descarga para Cliente ${cliente_id} (${count} registros)...`);
 
     while (hasMore) {
       const from = currentDataPage * CHUNK_SIZE;
@@ -64,49 +77,54 @@ export const getClientInventory = async (req, res) => {
       let chunkData = null;
       let attempts = 0;
 
-      // Bucle de Reintento para cada Chunk
       while (attempts < MAX_RETRIES && !chunkData) {
         try {
           const { data, error } = await supabase
             .from('inventarios_cliente_part')
             .select('*')
             .eq('id_cliente', cliente_id)
-            .order('id', { ascending: true }) // Orden determinista por ID para evitar saltos
+            .order('id', { ascending: true })
             .range(from, to);
 
           if (error) throw error;
           chunkData = data;
         } catch (err) {
           attempts++;
-          console.warn(`⚠️ Error en chunk ${currentDataPage} (Intento ${attempts}/${MAX_RETRIES}): ${err.message}`);
-          if (attempts >= MAX_RETRIES) throw err; // Si falla 3 veces, abortamos
-          await new Promise(r => setTimeout(r, 500 * attempts)); // Backoff exponencial
+          console.warn(`⚠️ Error chunk ${currentDataPage}: ${err.message}`);
+          if (attempts >= MAX_RETRIES) throw err;
+          await new Promise(r => setTimeout(r, 500 * attempts));
         }
       }
 
-      if (chunkData.length > 0) {
-        allRows = allRows.concat(chunkData);
-        currentDataPage++;
+      if (chunkData && chunkData.length > 0) {
+        // Serializar chunk y quitar corchetes [ ... ] para inyectar en el array principal
+        const jsonChunk = JSON.stringify(chunkData);
+        const content = jsonChunk.substring(1, jsonChunk.length - 1);
         
-        // Si el chunk es menor al límite, llegamos al final
-        if (chunkData.length < CHUNK_SIZE) {
-          hasMore = false;
+        if (content.length > 0) {
+            if (!isFirstChunk) res.write(',');
+            res.write(content);
+            isFirstChunk = false;
         }
+
+        currentDataPage++;
+        if (chunkData.length < CHUNK_SIZE) hasMore = false;
       } else {
         hasMore = false;
       }
     }
 
-    console.log(`✅ [Sync] Descarga completada: ${allRows.length} registros totales.`);
-
-    return res.status(200).json({ 
-      count: allRows.length, 
-      inventory: allRows 
-    });
+    res.write(']}');
+    res.end();
+    console.log(`✅ [Stream] Descarga completada.`);
 
   } catch (err) {
     console.error('🔥 Error Crítico Get Inventory:', err.message);
-    return res.status(500).json({ error: 'Error al recuperar inventario maestro.' });
+    if (!res.headersSent) {
+        return res.status(500).json({ error: 'Error al recuperar inventario maestro.' });
+    } else {
+        res.end(); // Cerrar stream si ya empezó
+    }
   }
 };
 
@@ -125,23 +143,33 @@ export const bulkImportInventory = async (req, res) => {
       id_cliente: cliente_id,
       codigo_producto: String(item.codigo_producto || item.codigo || "").trim(), 
       descripcion: item.descripcion || 'Sin descripción',
-      cantidad: Number(item.cantidad) || 0,
+      cantidad: Math.max(0, Number(item.cantidad) || 0),
       area: item.area || null,
       ubicacion: item.ubicacion || null,
       marbete: item.marbete || null,
       barcode: item.barcode || null,
-      costo: Number(item.costo) || 0,
+      costo: Math.max(0, Number(item.costo) || 0),
       unidad_medida: item.unidad_medida || 'UN',
       categoria: item.categoria || null,
       fecha_cargado: new Date()
     }));
 
-    const { data, error } = await supabase
-      .from('inventarios_cliente_part')
-      .insert(cleanItems)
-      .select();
+    // REFACTOR: Batching (Lotes) para evitar Payload Too Large
+    const CHUNK_SIZE = 1000;
+    let totalProcessed = 0;
 
-    if (error) throw error;
+    for (let i = 0; i < cleanItems.length; i += CHUNK_SIZE) {
+      const chunk = cleanItems.slice(i, i + CHUNK_SIZE);
+      
+      // Usamos upsert para mayor robustez (actualiza si existe conflicto de PK/Unique)
+      const { error } = await supabase
+        .from('inventarios_cliente_part')
+        .upsert(chunk) 
+        .select('id'); // Solo traemos ID para confirmar, no todo el objeto
+
+      if (error) throw error;
+      totalProcessed += chunk.length;
+    }
 
     // Auditoria para importación masiva.
     await logAudit({
@@ -158,7 +186,7 @@ export const bulkImportInventory = async (req, res) => {
 
     return res.status(201).json({ 
       message: 'Carga masiva completada.', 
-      count: data.length 
+      count: totalProcessed 
     });
 
   } catch (err) {
@@ -176,11 +204,18 @@ export const deleteClientInventory = async (req, res) => {
   }
 
   try {
-    const { data, error } = await supabase
+    // REFACTOR: Optimización de borrado (Count + Delete ciego)
+    // 1. Contamos primero (rápido)
+    const { count } = await supabase
+      .from('inventarios_cliente_part')
+      .select('*', { count: 'exact', head: true })
+      .eq('id_cliente', cliente_id);
+
+    // 2. Borramos sin traer datos de vuelta (muy rápido)
+    const { error } = await supabase
       .from('inventarios_cliente_part')
       .delete()
-      .eq('id_cliente', cliente_id)
-      .select();
+      .eq('id_cliente', cliente_id);
 
     if (error) throw error;
 
@@ -193,13 +228,13 @@ export const deleteClientInventory = async (req, res) => {
         module: 'INVENTORY',
         target_id: cliente_id || null,
         target_label: `Cliente : ${cliente_name || 'N/A'}`,
-        details: { reason: 'Deleted Inventory', deletedCount: data.length },
+        details: { reason: 'Deleted Inventory', deletedCount: count },
         req
     });
 
     return res.status(200).json({ 
       message: 'Inventario eliminado correctamente.', 
-      deletedCount: data.length 
+      deletedCount: count 
     });
 
   } catch (err) {
