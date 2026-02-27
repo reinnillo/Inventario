@@ -7,7 +7,7 @@ dotenv.config();
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 
-// Inicialización del cliente IMC
+// Inicialización del cliente reinnillo
 const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: false // Importante en backend: no guardar sesión en memoria/localstorage

@@ -1,7 +1,7 @@
 {
-  "name": "IMC-backend",
+  "name": "reinnillo-backend",
   "version": "1.0.0",
-  "description": "Backend API for IMC Group Inventory Management System",
+  "description": "Backend API for reinnillo Group Inventory Management System",
   "main": "src/app.js",
   "type": "module",
   "scripts": {

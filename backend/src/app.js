@@ -60,7 +60,7 @@ app.use('/api/auth', authRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', system: 'IMC Backend v2.5', time: new Date() });
+  res.json({ status: 'OK', system: 'reinnillo Backend v2.5', time: new Date() });
 });
 
 // ================= INICIO =================

@@ -78,7 +78,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: '50px'}}>
         <div className="brand">
             <Activity size={28} />
-            <span>{role === 'contador' ? 'IMC PDA' : role === 'verificador' ? 'IMC AUDIT' : 'IMC Group'}</span>
+            <span>{role === 'contador' ? 'reinnillo: PDA' : role === 'verificador' ? 'reinnillo: AUDIT' : 'reinnillo'}</span>
         </div>
         {/* Botón X solo visible en móvil si se ajusta CSS o se deja funcional */}
         <button 

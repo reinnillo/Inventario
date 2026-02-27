@@ -16,7 +16,7 @@ const drawHeader = (doc, title, clientData, stats = []) => {
   let y = MARGIN;
   
   // Logo Izquierda
-  doc.font('Helvetica-Bold').fontSize(22).fillColor(COLORS.primary).text('IMC Inventarios', MARGIN, y);
+  doc.font('Helvetica-Bold').fontSize(22).fillColor(COLORS.primary).text('reinnillo Inventarios', MARGIN, y);
   y += 28;
   doc.font('Helvetica').fontSize(9).fillColor(COLORS.secondary).text(title.toUpperCase(), MARGIN, y, { characterSpacing: 1 });
 
@@ -69,7 +69,7 @@ const drawFooter = (doc) => {
 
     doc.font('Helvetica').fontSize(8).fillColor(COLORS.secondary);
     doc.text(
-      `Generado automáticamente por Sistema IMC Inventarios. • Documento Confidencial • Pág ${i + 1} de ${range.count}`,
+      `Generado automáticamente por Sistema reinnillo Inventarios. • Documento Confidencial • Pág ${i + 1} de ${range.count}`,
       MARGIN, 
       doc.page.height - 30, // Posición segura muy abajo
       { align: 'center', width: PAGE_WIDTH - (MARGIN*2) }

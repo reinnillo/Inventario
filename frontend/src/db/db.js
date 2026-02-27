@@ -1,6 +1,6 @@
 import Dexie from 'dexie';
 
-export const db = new Dexie('IMC_Offline_DB');
+export const db = new Dexie('reinnillo_Offline_DB');
 
 // Definimos el esquema (Versión 4 - Auditoría Permisiva)
 // CAMBIO CLAVE: Subimos a version(4) para forzar la actualización en el navegador.

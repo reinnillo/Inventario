@@ -13,7 +13,7 @@ export const SystemUsersProvider = ({ children }) => {
   const refreshUsers = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/usuarios_imc`);
+      const res = await fetch(`${API_URL}/api/usuarios_reinnillo`);
       if (!res.ok) throw new Error("Fallo en enlace con Directorio");
       const data = await res.json();
       setUsers(data.users || []);
@@ -30,7 +30,7 @@ export const SystemUsersProvider = ({ children }) => {
   // 2. Crear Usuario
   const addUser = async (userData) => {
     try {
-      const res = await fetch(`${API_URL}/api/usuarios_imc`, {
+      const res = await fetch(`${API_URL}/api/usuarios_reinnillo`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
@@ -49,7 +49,7 @@ export const SystemUsersProvider = ({ children }) => {
   // 3. Editar Usuario 
   const editUser = async (userId, updates) => {
     try {
-      const res = await fetch(`${API_URL}/api/usuarios_imc/${userId}`, {
+      const res = await fetch(`${API_URL}/api/usuarios_reinnillo/${userId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates),
@@ -68,7 +68,7 @@ export const SystemUsersProvider = ({ children }) => {
   // 4. Asignación en Lote
   const assignUsersToClientBatch = async (clientId, userIds) => {
     try {
-      const res = await fetch(`${API_URL}/api/usuarios_imc/assign-batch`, {
+      const res = await fetch(`${API_URL}/api/usuarios_reinnillo/assign-batch`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ clientId, userIds }),

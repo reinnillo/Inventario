@@ -61,7 +61,7 @@ const Login = ({ onLogin }) => {
               <Activity size={36} color="var(--accent)" />
             </div>
             <h1 style={{ margin: 0, fontSize: '1.8rem', color: 'var(--fg)', letterSpacing: '1px' }}>
-              IMC ACCESS
+              reinnillo ACCESS
             </h1>
             <p style={{ margin: '10px 0 0 0', fontSize: '0.9rem', color: '#8b949e' }}>
               Plataforma de Auditoría & Control

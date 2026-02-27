@@ -193,7 +193,7 @@ const GuestDashboard = ({ token }) => {
           <Lock size={48} color="#ef4444" style={{ marginBottom: '20px', margin: '0 auto' }} />
           <h2 style={{ color: '#ef4444', marginTop: 0 }}>Acceso Restringido</h2>
           <p style={{ color: '#8b949e' }}>{error}</p>
-          <div style={{ marginTop: '20px', fontSize: '0.8rem', opacity: 0.5 }}>Portal de Auditoría IMC Group</div>
+          <div style={{ marginTop: '20px', fontSize: '0.8rem', opacity: 0.5 }}>Portal de Auditoría</div>
         </div>
       </div>
     );
@@ -210,7 +210,7 @@ const GuestDashboard = ({ token }) => {
                 <ShieldCheck color="#000" size={24} />
             </div>
             <div>
-                <h2 style={{ margin: 0, color: '#e6edf3' }}>IMC Live View</h2>
+                <h2 style={{ margin: 0, color: '#e6edf3' }}>reinnillo Live View</h2>
                 <div style={{ fontSize: '0.85rem', color: '#8b949e' }}>
                     Cliente: <strong style={{ color: 'var(--accent)' }}>{data.client.name}</strong>
                 </div>

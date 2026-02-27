@@ -1,8 +1,8 @@
-# IMC Group - Sistema de Gestión de Inventario
+# reinnillo Group - Sistema de Gestión de Inventario
 
 ## Descripción General
 
-El Sistema de Gestión de Inventario de IMC Group es una aplicación web completa diseñada para modernizar y optimizar los procesos de control de inventario físico. Esta herramienta facilita la colaboración en tiempo real entre administradores, contadores y verificadores, asegurando una mayor precisión, eficiencia y transparencia en los recuentos de inventario.
+El Sistema de Gestión de Inventario de reinnillo Group es una aplicación web completa diseñada para modernizar y optimizar los procesos de control de inventario físico. Esta herramienta facilita la colaboración en tiempo real entre administradores, contadores y verificadores, asegurando una mayor precisión, eficiencia y transparencia en los recuentos de inventario.
 
 La arquitectura del sistema se basa en un stack tecnológico moderno, con un backend robusto desarrollado en **Node.js** y **Express**, y un frontend dinámico e interactivo construido con **React**. La comunicación con la base de datos se gestiona a través de **Supabase**, mientras que **Dexie.js** se implementa en el cliente para ofrecer capacidades offline robustas, garantizando la continuidad del trabajo incluso sin conexión a internet.
 
@@ -42,8 +42,8 @@ Sigue estos pasos para configurar el entorno de desarrollo local.
 ### 1. Clonar el Repositorio
 
 ```bash
-git clone https://github.com/reinnillo/IMC_Inventario.git
-cd IMC_Inventario
+git clone https://github.com/reinnillo/reinnillo_Inventario.git
+cd reinnillo_Inventario
 ```
 
 ### 2. Configuración del Backend
@@ -90,7 +90,7 @@ La aplicación React estará disponible en `http://localhost:5173` (o el puerto 
 ## Estructura del Proyecto
 
 ```
-IMC_Inventario/
+reinnillo_Inventario/
 ├── backend/
 │   ├── src/
 │   │   ├── controllers/ # Lógica de negocio para cada endpoint
@@ -236,4 +236,4 @@ Las contribuciones son bienvenidas. Si deseas mejorar el proyecto, por favor sig
 5. Abre un Pull Request.
 
 ---
-**© 2024 IMC Group - Todos los derechos reservados.**
+**© 2024 reinnillo Group - Todos los derechos reservados.**

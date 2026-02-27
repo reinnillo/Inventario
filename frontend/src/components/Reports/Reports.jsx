@@ -142,7 +142,7 @@ const Reports = () => {
             const wb = window.XLSX.utils.book_new();
             window.XLSX.utils.book_append_sheet(wb, ws, "Reporte");
             const cName = clients.find(c => c.id === selectedClient)?.nombre || "C";
-            window.XLSX.writeFile(wb, `IMC_${activeReport.id}_${cName}.xlsx`);
+            window.XLSX.writeFile(wb, `reinnillo_${activeReport.id}_${cName}.xlsx`);
             setActiveReport(null);
         }
     } catch (err) { alert(err.message); } 
