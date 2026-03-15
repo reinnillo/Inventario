@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"c:/Users/reinn/OneDrive/Escritorio/IMC/IMC_Inventario\" status)"
+    ]
+  }
+}
