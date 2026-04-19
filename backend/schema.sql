@@ -105,24 +105,10 @@ CREATE TABLE IF NOT EXISTS conteos_part (
 );
 
 -- ============================================================
--- TABLA: inventario_verificado_part
--- ============================================================
-CREATE TABLE IF NOT EXISTS inventario_verificado_part (
-  id                   BIGSERIAL PRIMARY KEY,
-  cliente_id           BIGINT NOT NULL REFERENCES clientes(id),
-  codigo_producto      TEXT NOT NULL,
-  descripcion          TEXT,
-  cantidad_sistema     NUMERIC DEFAULT 0,
-  cantidad_final       NUMERIC DEFAULT 0,
-  diferencia           NUMERIC DEFAULT 0,
-  nombre_verificador   TEXT,
-  verificador_id       BIGINT REFERENCES usuarios_imc(id),
-  marbete              TEXT,
-  fecha_verificacion   TIMESTAMPTZ DEFAULT NOW(),
-  estado               TEXT DEFAULT 'pendiente',
-  tiempo_verificacion  INT  -- segundos activos en la verificación
-);
-
+-- NOTA: inventario_verificado_part ELIMINADA
+-- El rol verificador fue absorbido por contador.
+-- Los reportes de diferencias se generan cruzando
+-- conteos_part vs inventarios_cliente_part directamente.
 -- ============================================================
 -- TABLA: employee_session_stats  (sesión diaria por empleado)
 -- ============================================================
@@ -134,7 +120,6 @@ CREATE TABLE IF NOT EXISTS employee_session_stats (
   piezas_sesion      INT DEFAULT 0,
   skus_sesion        INT DEFAULT 0,
   velocidad_sesion   INT DEFAULT 0,
-  precision_sesion   NUMERIC(5,2) DEFAULT 100,
   tiempo_activo      INTERVAL DEFAULT '0 hours',
   hora_inicio        TIMESTAMPTZ DEFAULT NOW(),
   hora_fin           TIMESTAMPTZ
@@ -144,15 +129,13 @@ CREATE TABLE IF NOT EXISTS employee_session_stats (
 -- TABLA: employee_stats  (perfil global lifetime por empleado)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS employee_stats (
-  id                           BIGSERIAL PRIMARY KEY,
-  usuario_id                   BIGINT NOT NULL UNIQUE REFERENCES usuarios_imc(id),
-  piezas_totales_contadas      INT DEFAULT 0,
-  piezas_totales_verificadas   INT DEFAULT 0,
-  skus_totales_procesados      INT DEFAULT 0,
-  precision_global             NUMERIC(5,2) DEFAULT 100,
-  horas_totales_trabajadas     INTERVAL DEFAULT '0 hours',
-  inventarios_trabajados       INT DEFAULT 0,
-  fecha_creado                 TIMESTAMPTZ DEFAULT NOW()
+  id                        BIGSERIAL PRIMARY KEY,
+  usuario_id                BIGINT NOT NULL UNIQUE REFERENCES usuarios_imc(id),
+  piezas_totales_contadas   INT DEFAULT 0,
+  skus_totales_procesados   INT DEFAULT 0,
+  horas_totales_trabajadas  INTERVAL DEFAULT '0 hours',
+  inventarios_trabajados    INT DEFAULT 0,
+  fecha_creado              TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ============================================================
