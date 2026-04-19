@@ -2,7 +2,7 @@
 
 ## Descripción General
 
-El Sistema de Gestión de Inventario de reinnillo Group es una aplicación web completa diseñada para modernizar y optimizar los procesos de control de inventario físico. Esta herramienta facilita la colaboración en tiempo real entre administradores, contadores y verificadores, asegurando una mayor precisión, eficiencia y transparencia en los recuentos de inventario.
+El Sistema de Gestión de Inventario de reinnillo Group es una aplicación web completa diseñada para modernizar y optimizar los procesos de control de inventario físico. Esta herramienta facilita la colaboración en tiempo real entre administradores, supervisores y contadores, asegurando una mayor precisión, eficiencia y transparencia en los recuentos de inventario.
 
 La arquitectura del sistema se basa en un stack tecnológico moderno, con un backend robusto desarrollado en **Node.js** y **Express**, y un frontend dinámico e interactivo construido con **React**. La comunicación con la base de datos se gestiona a través de **Supabase**, mientras que **Dexie.js** se implementa en el cliente para ofrecer capacidades offline robustas, garantizando la continuidad del trabajo incluso sin conexión a internet.
 
@@ -10,21 +10,21 @@ La arquitectura del sistema se basa en un stack tecnológico moderno, con un bac
 
 ### Backend (API REST)
 
-- **Gestión de Autenticación y Roles**: Sistema seguro de inicio de sesión con roles de usuario (Administrador, Contador, Verificador) para controlar el acceso a las diferentes funcionalidades.
-- **Operaciones CRUD**: Endpoints para gestionar productos, clientes, conteos, verificaciones e inventarios.
-- **Generación de Reportes**: Creación de informes detallados en formato PDF y Excel sobre el estado del inventario, discrepancias y resultados finales.
-- **Estadísticas en Tiempo Real**: Dashboards con métricas clave sobre el progreso de los conteos y verificaciones.
-- **Auditoría y Supervisión**: Módulos especializados para la supervisión de la calidad del trabajo de contadores y verificadores.
+- **Gestión de Autenticación y Roles**: Sistema seguro de inicio de sesión con roles de usuario (`admin`, `supervisor`, `contador`) para controlar el acceso a las diferentes funcionalidades.
+- **Operaciones CRUD**: Endpoints para gestionar productos, clientes, conteos e inventarios.
+- **Generación de Reportes**: Creación de informes detallados en formato PDF y Excel sobre el estado del inventario, discrepancias y resultados finales, incluyendo reporte de productos contados.
+- **Estadísticas en Tiempo Real**: Dashboards con métricas clave sobre el progreso de los conteos.
+- **Auditoría**: Registro de acciones relevantes para trazabilidad y seguridad.
 
 ### Frontend (Aplicación React)
 
 - **Interfaz Moderna e Intuitiva**: Diseño limpio y fácil de usar que mejora la experiencia del usuario.
-- **Capacidades Offline**: Gracias a **Dexie.js**, los contadores y verificadores pueden continuar su trabajo sin conexión. Los datos se almacenan localmente en IndexedDB y se sincronizan automáticamente con el servidor cuando se restablece la conexión.
-- **Dashboards Interactivos con `Recharts`**: Se han implementado visualizaciones de datos avanzadas para el monitoreo de operaciones:
-    - **Dashboard de Administrador**: Gráficos de pastel que muestran la distribución de la fuerza laboral y el estado general de la cartera de clientes.
-    - **Supervisión en Tiempo Real**: Gráficos de barras que detallan la productividad del equipo (conteo y auditoría) y las áreas de mayor actividad, complementando las tablas de datos en vivo.
-- **Componentes Reutilizables**: Una base de código organizada con componentes para cada funcionalidad, facilitando el mantenimiento y la escalabilidad.
-- **Enrutamiento del Lado del Cliente**: Navegación fluida y rápida entre las diferentes secciones de la aplicación con **React Router**.
+- **Capacidades Offline**: Gracias a **Dexie.js**, los contadores pueden continuar su trabajo sin conexión. Los datos se almacenan localmente en IndexedDB y se sincronizan automáticamente con el servidor cuando se restablece la conexión.
+- **Dashboards Interactivos con `Recharts`**: Visualizaciones de datos para el monitoreo de operaciones para administradores y supervisores:
+  - **Dashboard de Administrador/Supervisor**: Gráficos de pastel con distribución de la fuerza laboral y estado de clientes.
+  - **Supervisión de Conteo en Tiempo Real**: Gráficos de barras con productividad del equipo y áreas de mayor actividad.
+- **Módulo de Contador Modular**: Arquitectura cohesiva y desacoplada en `frontend/src/module/contador/` con separación clara entre hooks de lógica, componentes visuales y utilidades.
+- **Enrutamiento del Lado del Cliente**: Navegación fluida y rápida con **React Router**.
 - **Context API para el Manejo de Estado**: Gestión centralizada de la autenticación, datos de usuario y estado de la aplicación.
 
 ## Requisitos Previos
@@ -42,8 +42,8 @@ Sigue estos pasos para configurar el entorno de desarrollo local.
 ### 1. Clonar el Repositorio
 
 ```bash
-git clone https://github.com/reinnillo/reinnillo_Inventario.git
-cd reinnillo_Inventario
+git clone https://github.com/reinnillo/Inventario.git
+cd Inventario
 ```
 
 ### 2. Configuración del Backend
@@ -90,23 +90,50 @@ La aplicación React estará disponible en `http://localhost:5173` (o el puerto 
 ## Estructura del Proyecto
 
 ```
-reinnillo_Inventario/
+IMC_Inventario/
 ├── backend/
 │   ├── src/
-│   │   ├── controllers/ # Lógica de negocio para cada endpoint
-│   │   ├── routes/      # Definición de las rutas de la API
-│   │   ├── services/    # Servicios auxiliares (auditoría, etc.)
-│   │   └── app.js       # Punto de entrada del servidor
+│   │   ├── controllers/        # Lógica de negocio para cada endpoint
+│   │   │   ├── countingController.js
+│   │   │   ├── reportsController.js
+│   │   │   ├── statsController.js
+│   │   │   └── userController.js
+│   │   ├── routes/             # Definición de las rutas de la API
+│   │   ├── services/           # Servicios auxiliares (auditoría, etc.)
+│   │   └── app.js              # Punto de entrada del servidor
 │   └── package.json
 └── frontend/
     ├── src/
-    │   ├── components/  # Componentes de React
-    │   ├── context/     # Proveedores de Context API
-    │   ├── db/          # Configuración de Dexie.js (IndexedDB)
-    │   ├── App.jsx      # Componente raíz de la aplicación
-    │   └── main.jsx     # Punto de entrada de React
+    │   ├── components/         # Componentes globales de React
+    │   │   ├── Dashboard/      # AdminDashboard
+    │   │   ├── Home/           # Layout principal con enrutamiento por rol
+    │   │   ├── Inventory/      # Gestión de inventario
+    │   │   ├── Reports/        # Generación de reportes
+    │   │   └── Supervision/    # Supervisión de conteos (admin/supervisor)
+    │   ├── module/             # Módulos de funcionalidad encapsulada
+    │   │   └── contador/       # Módulo de conteo (contadores)
+    │   │       ├── index.jsx
+    │   │       ├── CounterDashboard.jsx   # Orquestador principal
+    │   │       ├── constants.js
+    │   │       ├── contador.css
+    │   │       ├── components/            # Componentes visuales (solo props)
+    │   │       ├── hooks/                 # Lógica de negocio encapsulada
+    │   │       └── utils/                 # Funciones puras reutilizables
+    │   ├── context/            # Proveedores de Context API
+    │   ├── config/             # Configuración de endpoints de la API
+    │   ├── db/                 # Configuración de Dexie.js (IndexedDB)
+    │   ├── App.jsx             # Componente raíz de la aplicación
+    │   └── main.jsx            # Punto de entrada de React
     └── package.json
 ```
+
+## Roles de Usuario
+
+| Rol         | Acceso                                                                 |
+|-------------|------------------------------------------------------------------------|
+| `admin`     | Dashboard completo, supervisión de conteos, reportes, gestión de usuarios e inventario |
+| `supervisor`| Dashboard, supervisión de conteos, reportes                           |
+| `contador`  | Módulo de conteo (escaneo, sincronización offline, historial de lotes) |
 
 ## 🗄️ Esquema de la Base de Datos
 
@@ -121,7 +148,7 @@ El sistema utiliza una arquitectura PostgreSQL sobre Supabase, implementando una
 - **Campos Clave**:
   - `id`: `bigint` (FK implícita).
   - `nombre`, `correo` (Unique), `cedula` (Unique).
-  - `role`: `enum ('admin', 'supervisor', 'contador', 'verificador')`.
+  - `role`: `enum ('admin', 'supervisor', 'contador')`.
   - `user_type`: `text` (Default: 'Fijo').
   - `cliente_id`: `bigint` (Para usuarios restringidos a un solo cliente).
   - `activo`: `boolean`, `ultimo_acceso`: `timestamptz`.
@@ -192,7 +219,7 @@ El sistema utiliza una arquitectura PostgreSQL sobre Supabase, implementando una
 
 ---
 
-### 📊 Métricas y Auditoría (Gamification & Logs)
+### 📊 Métricas y Auditoría
 
 #### `employee_stats` (Globales)
 - **Razón de ser**: Acumulado histórico del rendimiento del usuario.
@@ -209,7 +236,6 @@ El sistema utiliza una arquitectura PostgreSQL sobre Supabase, implementando una
   - `action`, `module`.
   - `details`: `jsonb` (Cambios específicos, payload).
   - `ip_address`: `text`.
-
 
 ## Scripts Disponibles
 
@@ -236,4 +262,4 @@ Las contribuciones son bienvenidas. Si deseas mejorar el proyecto, por favor sig
 5. Abre un Pull Request.
 
 ---
-**© 2024 reinnillo Group - Todos los derechos reservados.**
+**© 2025 reinnillo Group - Todos los derechos reservados.**
