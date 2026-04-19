@@ -15,7 +15,8 @@ const enrichWithMasterData = async (items, cliente_id) => {
     .from('inventarios_cliente_part')
     .select('codigo_producto, costo, area, ubicacion')
     .eq('id_cliente', cliente_id)
-    .in('codigo_producto', codigos);
+    .in('codigo_producto', codigos)
+    .limit(50000);
 
   if (error) {
       console.error("Error en enrichment:", error);
@@ -107,12 +108,12 @@ export const getUncountedCodesReport = async (req, res) => {
     
     const codigosVerificados = new Set((verificados || []).map(v => v.codigo_producto));
 
-    // 2. Traer todo el sistema (limitado por seguridad, en prod usar paginación)
-    // Nota: Aquí SÍ podemos pedir costo/area porque consultamos la tabla MAESTRA
+    // 2. Traer todo el sistema — límite alto explícito para evitar el cap de 1000 de PostgREST
     const { data: sistema, error: errSys } = await supabase
       .from('inventarios_cliente_part')
-      .select('codigo_producto, descripcion, cantidad, costo, area, ubicacion') 
-      .eq('id_cliente', cliente_id);
+      .select('codigo_producto, descripcion, cantidad, costo, area, ubicacion')
+      .eq('id_cliente', cliente_id)
+      .limit(50000);
 
     if (errSys) throw errSys;
 
@@ -145,11 +146,12 @@ export const getUncountedLocationsReport = async (req, res) => {
       
     const codigosVerificados = new Set((verificados || []).map(v => v.codigo_producto));
 
-    // 2. Traer ubicaciones del sistema
+    // 2. Traer ubicaciones del sistema — límite alto explícito para evitar el cap de 1000 de PostgREST
     const { data: sistema } = await supabase
       .from('inventarios_cliente_part')
       .select('codigo_producto, ubicacion, area')
-      .eq('id_cliente', cliente_id);
+      .eq('id_cliente', cliente_id)
+      .limit(50000);
 
     if (!sistema) return res.json({ data: [] });
 

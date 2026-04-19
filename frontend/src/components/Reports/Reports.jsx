@@ -114,9 +114,9 @@ const Reports = () => {
         // CONSTRUCCIÓN DE PARÁMETROS CON AUDITORÍA
         const queryParams = new URLSearchParams({
             cliente_id: selectedClient,
-            actor_id: user.id,       // Quién
-            actor_name: user.nombre, // Nombre
-            report_type: activeReport.title // Qué reporte (Metadata extra)
+            admin_id: user.id,
+            admin_name: user.nombre,
+            report_type: activeReport.title
         }).toString();
 
         const res = await fetch(`${API_URL}/api/reportes/${activeReport.endpoint}?${queryParams}`);
@@ -141,7 +141,7 @@ const Reports = () => {
             const ws = window.XLSX.utils.json_to_sheet(exportData);
             const wb = window.XLSX.utils.book_new();
             window.XLSX.utils.book_append_sheet(wb, ws, "Reporte");
-            const cName = clients.find(c => c.id === selectedClient)?.nombre || "C";
+            const cName = clients.find(c => c.id === Number(selectedClient))?.nombre || "C";
             window.XLSX.writeFile(wb, `reinnillo_${activeReport.id}_${cName}.xlsx`);
             setActiveReport(null);
         }

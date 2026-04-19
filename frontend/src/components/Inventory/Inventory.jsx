@@ -3,23 +3,17 @@ import React from "react";
 import { useAuth } from "../../context/AuthContext";
 import AdminInventoryView from "./AdminInventoryView";
 import CounterMetrics from "./CounterMetrics";
-import VerifierMetrics from "./VerifierMetrics";
 
 const Inventory = () => {
   const { user } = useAuth();
   const role = user?.role?.toLowerCase();
 
-  // Lógica de enrutamiento por rol
   if (role === 'admin' || role === 'supervisor') {
     return <AdminInventoryView />;
   }
-  
+
   if (role === 'contador') {
     return <CounterMetrics />;
-  }
-  
-  if (role === 'verificador') {
-    return <VerifierMetrics />;
   }
 
   // Fallback seguro

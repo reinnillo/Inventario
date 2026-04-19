@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git -C \"c:/Users/reinn/OneDrive/Escritorio/IMC/IMC_Inventario\" status)"
+      "Bash(git pull *)",
+      "Bash(printf '{\\\\r\\\\n  \"permissions\": {\\\\r\\\\n    \"allow\": [\\\\r\\\\n      \"Bash\\(git -C \\\\\\\\\"c:/Users/reinn/OneDrive/Escritorio/IMC/IMC_Inventario\\\\\\\\\" status\\)\",\\\\r\\\\n      \"Bash\\(git pull *\\)\"\\\\r\\\\n    ]\\\\r\\\\n  }\\\\r\\\\n}\\\\r\\\\n')",
+      "Bash(rm -f .claude/settings.local.json.bak)",
+      "Bash(git add *)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\reinn\\OneDrive\\Escritorio\\IMC\\IMC_Inventario\\.claude"
     ]
   }
 }

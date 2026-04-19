@@ -7,7 +7,6 @@ import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import clientRoutes from './routes/clientRoutes.js';
 import countingRoutes from './routes/countingRoutes.js';
-import verificationRoutes from './routes/verificationRoutes.js'; 
 import inventoryRoutes from './routes/inventoryRoutes.js';
 import reportsRoutes from './routes/reportsRoutes.js';
 import pdfRoutes from './routes/pdfRoutes.js';
@@ -48,7 +47,6 @@ app.use(cors({
 app.use('/api', userRoutes);       
 app.use('/api', clientRoutes);     
 app.use('/api', countingRoutes);   
-app.use('/api', verificationRoutes);
 app.use('/api', inventoryRoutes);
 app.use('/api', reportsRoutes);
 app.use('/api/reportes', pdfRoutes);

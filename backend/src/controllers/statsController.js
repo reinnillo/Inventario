@@ -27,7 +27,7 @@ const parsePostgresIntervalToHours = (intervalStr) => {
     return hours + (minutes / 60);
 };
 
-// ... (getCounterMetrics y getVerifierMetrics se mantienen igual para métricas de SESIÓN DIARIA) ...
+// getCounterMetrics — métricas de sesión diaria del contador
 
 export const getCounterMetrics = async (req, res) => {
   const { userId } = req.params;
@@ -79,51 +79,6 @@ export const getCounterMetrics = async (req, res) => {
 
   } catch (err) {
     return res.status(500).json({ error: 'Error contador: ' + err.message });
-  }
-};
-
-export const getVerifierMetrics = async (req, res) => {
-  const { userId } = req.params;
-  if (!userId) return res.status(400).json({ error: 'ID requerido.' });
-
-  try {
-    const today = new Date().toISOString().slice(0, 10);
-    const { data: verificaciones, error } = await supabase
-      .from('inventario_verificado_part')
-      .select('cantidad_final, diferencia, fecha_verificacion, tiempo_verificacion, codigo_producto')
-      .eq('verificador_id', userId)
-      .gte('fecha_verificacion', `${today}T00:00:00`);
-
-    if (error) throw error;
-
-    if (!verificaciones || verificaciones.length === 0) {
-        return res.json({ metrics: { piezas: 0, skus: 0, diferencias: 0, velocidad: 0, precision: 100, tiempo: "0h 0m" } });
-    }
-
-    let piezas = 0, diffs = 0, tiempoSec = 0;
-    const skus = new Set();
-
-    verificaciones.forEach(v => {
-        piezas += Number(v.cantidad_final) || 0;
-        if (Number(v.diferencia) !== 0) diffs++;
-        if (v.tiempo_verificacion) tiempoSec += v.tiempo_verificacion;
-        skus.add(v.codigo_producto);
-    });
-
-    const precision = verificaciones.length > 0 ? ((verificaciones.length - diffs) / verificaciones.length) * 100 : 100;
-    const horas = Math.floor(tiempoSec / 3600);
-    const minutos = Math.floor((tiempoSec % 3600) / 60);
-    
-    const horasDecimal = tiempoSec / 3600;
-    const velocidad = (horasDecimal > 0.01) ? Math.round(piezas / horasDecimal) : piezas * 60;
-
-    await updateSessionStats(userId, 'verificador');
-
-    return res.json({
-        metrics: { piezas, skus: skus.size, diferencias: diffs, velocidad, precision: precision.toFixed(1), tiempo: `${horas}h ${minutos}m` }
-    });
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
   }
 };
 

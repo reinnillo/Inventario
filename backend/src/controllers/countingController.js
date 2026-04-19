@@ -14,20 +14,23 @@ export const syncBatchCounts = async (req, res) => {
 
   try {
     const cleanItems = items.map(item => ({
-      cliente_id: item.cliente_id || 1, 
-      area: item.area ? String(item.area) : null,
-      ubicacion: item.ubicacion ? String(item.ubicacion) : null,
-      marbete: item.marbete ? String(item.marbete) : "S/M", 
-      codigo_producto: item.codigo_producto ? String(item.codigo_producto) : null,
-      cantidad: Number(item.cantidad) || 0, 
-      fecha_escaneo: item.fecha_escaneo || new Date(),
-      contador_id: item.contador_id || null,
-      nombre_contador: item.nombre_contador || 'Desconocido',
+      cliente_id:           item.cliente_id || 1,
+      area:                 item.area ? String(item.area) : null,
+      ubicacion:            item.ubicacion ? String(item.ubicacion) : null,
+      marbete:              item.marbete ? String(item.marbete) : "S/M",
+      codigo_producto:      item.codigo_producto ? String(item.codigo_producto) : null,
+      cantidad:             Number(item.cantidad) || 0,
+      cantidad_sistema:     item.cantidad_sistema != null ? Number(item.cantidad_sistema) : null,
+      descripcion:          item.descripcion || null,
+      diferencia:           item.diferencia  != null ? Number(item.diferencia)  : null,
+      fecha_escaneo:        item.fecha_escaneo || new Date(),
+      contador_id:          item.contador_id || null,
+      nombre_contador:      item.nombre_contador || 'Desconocido',
       fecha_inicio_marbete: item.fecha_inicio_marbete || null,
-      fecha_fin_marbete: item.fecha_fin_marbete || null,
-      es_recuento: item.es_recuento === true, 
-      estado: 'pendiente', 
-      fecha_sincronizado: new Date()
+      fecha_fin_marbete:    item.fecha_fin_marbete || null,
+      es_recuento:          item.es_recuento === true,
+      estado:               'pendiente',
+      fecha_sincronizado:   new Date()
     }));
 
     const { data, error } = await supabase.from('conteos_part').insert(cleanItems).select();

@@ -34,7 +34,7 @@ export const createUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const pass_hash = await bcrypt.hash(password, salt);
     
-    const validRoles = ['admin', 'supervisor', 'contador', 'verificador'];
+    const validRoles = ['admin', 'supervisor', 'contador'];
     const userRole = (role && validRoles.includes(role)) ? role : 'contador';
 
     const { data, error } = await supabase
