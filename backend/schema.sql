@@ -4,7 +4,7 @@
 -- ============================================================
 
 -- ENUMS
-CREATE TYPE role_enum AS ENUM ('admin', 'supervisor', 'contador', 'verificador', 'guest');
+CREATE TYPE role_enum AS ENUM ('admin', 'supervisor', 'contador', 'guest');
 CREATE TYPE cliente_estado AS ENUM ('activo', 'inactivo', 'suspendido');
 
 -- ============================================================
